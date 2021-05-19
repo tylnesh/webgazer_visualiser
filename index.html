@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Webgazer Visualiser</title>
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+        <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js.map"></script>
+        <script src="./js/helper.js"></script>
+
+        <link href="./node_modules/bootstrap/dist/css/bootstrap.min.css.map" rel="stylesheet">
+        <link href="./node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+
+
+
+    <body class="bg-dark">
+        <h1 class="display-1 text-center text-light">Webgazer visualiser</h1>
+        
+        <div class="container">
+            <form>
+                <div class="row">
+                    <div class="input-group mb-3 col-6">
+                        <label class="input-group-text" for="csvUpload">Upload the csv</label>
+                        <input type="file" class="form-control" accept=".csv" id="csvUpload">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="input-group mb-3 col-6">
+                        <label class="input-group-text" for="screenshotUpload">Upload the screenshot</label>
+                        <input type="file" class="form-control" accept="image/*" id="screenshotUpload">
+                    </div>
+                </div>
+
+                <div class="row">
+                    
+                    <div class="mb-3 col-3">_</div>
+                    <div class="input-group mb-3 col-3">
+                        <label class="input-group-text" for="timeInterval">Choose the time interval</label>
+                        <input type="number" class="form-control" min="0" max="10" step="0.5" id="timeInterval" value="0">
+                    </div>
+                    <div class="mb-3 col-3">_</div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <button id="loadButton" class="btn btn-primary" type="submit">Load</button>
+                        <button id="clearButton" class="btn btn-danger" type="button">Clear</button>
+                    </div>
+                </div>
+               
+    
+                <div class="row">
+                    <div class="col-12 mb-3 mt-5">
+                        <h3 id="timeSpent" class="text-center text-light"></h3> 
+                    </div>
+                </div>
+    
+                
+            </form>
+        </div>
+
+        <div id="containerDiv" class="containe-fluid"></div>
+       
+        <script>
+            document.querySelector('form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const gazeFilePath = document.getElementById('csvUpload').files[0].path;
+                const screenshotPath = document.getElementById('screenshotUpload').files[0].path;
+                const timeInterval = parseFloat(document.getElementById('timeInterval').value);
+                console.log(timeInterval);
+                window.gaze.loadGaze(gazeFilePath, screenshotPath, timeInterval, "containerDiv");
+            });
+
+            document.getElementById('clearButton').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('csvUpload').files[0].path = null;
+                document.getElementById('screenshotUpload').files[0].path = null;
+                document.getElementById('timeSpent').innerHTML = "";
+                window.gaze.clearGaze('containerDiv');
+            });
+        </script>
+    </body>
+</html>
