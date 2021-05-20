@@ -78,13 +78,19 @@
         
        
         <script>
-            document.querySelector('form').addEventListener('submit', (e) => {
+        
+            let gazeData;
+
+            let startingTime; 
+            document.querySelector('form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const gazeFilePath = document.getElementById('csvUpload').files[0].path;
                 const screenshotPath = document.getElementById('screenshotUpload').files[0].path;
                 const timeInterval = parseFloat(document.getElementById('timeInterval').value);
                 console.log(timeInterval);
                 window.gaze.loadGaze(gazeFilePath, screenshotPath, timeInterval, "containerDiv");
+                gazeData = await window.gaze.getGaze();
+                startingTime = await window.gaze.getStartingTime();
             });
 
             document.getElementById('clearButton').addEventListener('click', (e) => {
@@ -93,6 +99,15 @@
                 document.getElementById('screenshotUpload').files[0].path = null;
                 document.getElementById('timeSpent').innerHTML = "";
                 window.gaze.clearGaze('containerDiv');
+            });
+
+            document.getElementById('nextButton').addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                const timeInterval = parseFloat(document.getElementById('timeInterval').value);
+                console.log(startingTime);
+                startingTime = await window.gaze.nextStep(gazeData, startingTime, timeInterval);
+                console.log(startingTime);
             });
         </script>
     </body>
