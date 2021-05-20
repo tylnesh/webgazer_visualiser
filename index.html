@@ -50,19 +50,32 @@
                         <button id="clearButton" class="btn btn-danger" type="button">Clear</button>
                     </div>
                 </div>
+
+
+                <div class="row">
+                    <div class=" col-12 mb-3 mt-5 text-center">
+                        <button id="prevButton" class="btn btn-info" type="button">Prev</button>
+                        <button id="nextButton" class="btn btn-info" type="button">Next</button>
+                    </div>
+                </div>
                
     
                 <div class="row">
-                    <div class="col-12 mb-3 mt-5">
-                        <h3 id="timeSpent" class="text-center text-light"></h3> 
+                    <div class="col-12 mb-3 mt-5 text-center text-light">
+                        <h3 class="">
+                            Time spent reading: 
+                        </h3>
+                        <span id="timeSpent" class=""></span> 
                     </div>
                 </div>
-    
-                
+
+                <div class="row">
+                    <div id="containerDiv" class="mt-5 mb-3 col-12 container"></div>
+                </div>
             </form>
         </div>
 
-        <div id="containerDiv" class="containe-fluid"></div>
+        
        
         <script>
             document.querySelector('form').addEventListener('submit', (e) => {
