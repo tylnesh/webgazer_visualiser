@@ -94,7 +94,7 @@ async function GenerateScanpathStep(scanpath_canvas, gazeData, startingTime, ste
   let curX = 0;
   let curY = 0;
 
-  console.log("GenerateScanpathStep -> startingTime" + startingTime);
+  console.log("GenerateScanpathStep -> startingTime: " + startingTime);
   let endingTime = startingTime + step;
   gazeData.every(function (row) {
     if (startingTime <= row[2]) {
@@ -113,7 +113,7 @@ async function GenerateScanpathStep(scanpath_canvas, gazeData, startingTime, ste
 
   });
 
-  console.log("GenerateScanpathStep -> endingTime" + endingTime);
+  console.log("GenerateScanpathStep -> endingTime: " + endingTime);
   return endingTime;
 }
 
@@ -217,10 +217,10 @@ contextBridge.exposeInMainWorld(
     nextStep: async (gazeData, startingTime, timeInterval) => {
       step = timeInterval * 1000
       let scanpath = document.getElementById("scanpath_canvas");
-      startingTime = await GenerateScanpathStep(scanpath, gazeData, startingTime, step);
+      await GenerateScanpathStep(scanpath, gazeData, startingTime, step);
       scanpath.style.position = "absolute"
       scanpath.style.zIndex = 100;
-      return startingTime;
+     
       //containerDiv.appendChild(scanpath);
       //containerDiv.appendChild(canvas);
 
