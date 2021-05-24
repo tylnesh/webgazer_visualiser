@@ -10,6 +10,9 @@ window.addEventListener('DOMContentLoaded', () => {
   })
 
 
+  let heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts;
+
+
   function GenerateHeatmap(containerDivId, gazeData, width, h){
 
     let h337 = require('heatmap.js');
@@ -25,16 +28,16 @@ window.addEventListener('DOMContentLoaded', () => {
   
   let heatmapConfig = {
     container: heatmapDiv,
-    radius: 30,
-    maxOpacity: .5,
-    minOpacity: 0.1,
-    blur: .75
+    radius: heatmapRadius,
+    maxOpacity: maxOpacity,
+    minOpacity: minOpacity,
+    blur: heatmapBlur
   };
   
   heatmap = h337.create(heatmapConfig);
   
   heatmap.setData({
-    max: 10,
+    max: maxDatapoints,
     data: [{ x: 0, y: 0, value: 0}]
   });
   
@@ -45,7 +48,7 @@ window.addEventListener('DOMContentLoaded', () => {
   var dataPoint = {
     x: row[0], // x coordinate of the datapoint, a number
     y: row[1], // y coordinate of the datapoint, a number
-    value: 3 // the value at datapoint(x, y)
+    value: dataPts // the value at datapoint(x, y)
   };
   
   heatmap.addData(dataPoint);
@@ -133,6 +136,19 @@ contextBridge.exposeInMainWorld(
         document.getElementById(containerDivId).innerHTML = "";
 
       },
+
+      setHeatmapParameters : (hr, mino, maxo, blur, maxDtps, dtps) =>
+      {
+
+        heatmapRadius = hr;
+        minOpacity = mino;
+        maxOpacity = maxo;
+        heatmapBlur = blur;
+        maxDatapoints = maxDtps;
+        dataPts = dtps
+        
+      },
+
       getGaze: () => { return gazeData ;},
       getStartingTime: () => { return startingTime ;},
       loadGaze: async (gazePath, screenPath, timeInterval, containerDivId) => {

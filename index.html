@@ -18,36 +18,86 @@
         <h1 class="display-1 text-center text-light">Webgazer visualiser</h1>
         
         <div class="container">
-            <form>
+
                 <div class="row">
                     <div class="input-group mb-3 col-6">
-                        <label class="input-group-text" for="csvUpload">Upload the csv</label>
+                        <label class="input-group-text" for="csvUpload">Gaze Data</label>
                         <input type="file" class="form-control" accept=".csv" id="csvUpload">
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="input-group mb-3 col-6">
-                        <label class="input-group-text" for="screenshotUpload">Upload the screenshot</label>
+                        <label class="input-group-text" for="screenshotUpload">Screenshot</label>
                         <input type="file" class="form-control" accept="image/*" id="screenshotUpload">
                     </div>
                 </div>
 
                 <div class="row">
-                    
-                    <div class="mb-3 col-3">_</div>
-                    <div class="input-group mb-3 col-3">
-                        <label class="input-group-text" for="timeInterval">Choose the time interval</label>
-                        <input type="number" class="form-control" min="0" max="10" step="0.5" id="timeInterval" value="0">
+                    <div class="mb-3 col-4">
+                        <div class="input-group">
+                  
+                            <label class="input-group-text" for="timeInterval">Time interval</label>
+                                        
+                            <input type="number" class="form-control" min="0" max="10" step="0.5" id="timeInterval" value="0">
+                                        
+                        </div>
+                                              
                     </div>
-                    <div class="mb-3 col-3">_</div>
-
+                    <div class="col-4 mb-3">
+                        <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="generateHeatmap" checked disabled>
+                        <label class="form-check-label text-light" for="generateHeatmap">Generate Heatmap</label>
+                    </div>
+                    </div>
+                    
+                    <div class="col-4 mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="generateScanpath" checked disabled>
+                            <label class="form-check-label text-light" for="generateScanpath">Generate Scanpath</label>
+                        </div>
+                    </div>
+                    
                 </div>
 
                 <div class="row">
-                    <div class="col-12 text-center">
-                        <button id="loadButton" class="btn btn-primary" type="submit">Load</button>
+                    <h3 class="text-center mb-3 mt-3 text-light text-center"> Heatmap settings</h3>
+                    <div class="mb-3 col-4">
+                        <label class="input-group-text" for="heatmapRadius">Radius</label>
+                        <input type="number" class="form-control" min="0" max="100" step="0.5" id="heatmapRadius" value="30">
+                    </div>
+                    <div class="mb-3 col-4">
+                        <label class="input-group-text" for="minOpacity">Min opacity</label>
+                        <input type="number" class="form-control" min="0" max="1" step="0.01" id="minOpacity" value="0.1">
+                    </div>
+                    <div class="mb-3 col-4">
+                        <label class="input-group-text" for="maxOpacity">Max opacity</label>
+                        <input type="number" class="form-control" min="0" max="1" step="0.01" id="maxOpacity" value="0.5">
+                    </div>
+
+                    <div class="mb-3 col-4">
+                        <label class="input-group-text" for="heatmapBlur">Blur</label>
+                        <input type="number" class="form-control" min="0" max="1" step="0.01" id="heatmapBlur" value="0.75">
+                    </div>
+                    <div class="mb-3 col-4">
+                        <label class="input-group-text" for="maxDatapoints">Max datapoint</label>
+                        <input type="number" class="form-control" min="0" max="100" step="1" id="maxDatapoints" value="10">
+                    </div>
+                    <div class="mb-3 col-4">
+                        <label class="input-group-text" for="dataPts">Pts per fixation</label>
+                        <input type="number" class="form-control" min="0" max="100" step="1" id="dataPts" value="3">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4 text-end">
+                        <button id="loadButton" class="btn btn-primary" type="button">Load</button>
+                    </div>
+                    <div class="col-4 text-center">
                         <button id="clearButton" class="btn btn-danger" type="button">Clear</button>
+                    </div>
+                    <div class="col-4 text-start">
+                        <button id="exportButton" class="btn btn-success" type="button" disabled>Export</button>
                     </div>
                 </div>
                
@@ -58,19 +108,29 @@
                     </div>
                 </div>
     
-                
-            </form>
+        </div>
+
         </div>
 
         <div id="containerDiv" class="containe-fluid"></div>
        
         <script>
-            document.querySelector('form').addEventListener('submit', (e) => {
+                document.getElementById('loadButton').addEventListener('click', (e) => {
                 e.preventDefault();
                 const gazeFilePath = document.getElementById('csvUpload').files[0].path;
                 const screenshotPath = document.getElementById('screenshotUpload').files[0].path;
                 const timeInterval = parseFloat(document.getElementById('timeInterval').value);
                 console.log(timeInterval);
+                
+                const heatmapRadius = document.getElementById('heatmapRadius').value;
+                const minOpacity = parseFloat(document.getElementById('minOpacity').value);
+                const maxOpacity = parseFloat(document.getElementById('maxOpacity').value);
+                const heatmapBlur = parseFloat(document.getElementById('heatmapBlur').value);
+                const maxDatapoints = parseInt(document.getElementById('maxDatapoints').value);
+                const dataPts = parseInt(document.getElementById('dataPts').value);
+
+                window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts);
+                      
                 window.gaze.loadGaze(gazeFilePath, screenshotPath, timeInterval, "containerDiv");
             });
 
