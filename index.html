@@ -100,19 +100,32 @@
                         <button id="exportButton" class="btn btn-success" type="button" disabled>Export</button>
                     </div>
                 </div>
+
+
+                <div class="row">
+                    <div class=" col-12 mb-3 mt-5 text-center">
+                        <button id="prevButton" class="btn btn-info" type="button">Prev</button>
+                        <button id="nextButton" class="btn btn-info" type="button">Next</button>
+                    </div>
+                </div>
                
     
                 <div class="row">
-                    <div class="col-12 mb-3 mt-5">
-                        <h3 id="timeSpent" class="text-center text-light"></h3> 
+                    <div class="col-12 mb-3 mt-5 text-center text-light">
+                        <h3 class="">
+                            Time spent reading: 
+                        </h3>
+                        <span id="timeSpent" class=""></span> 
                     </div>
                 </div>
     
         </div>
 
+        <div id='containerDiv'></div>
+
         </div>
 
-        <div id="containerDiv" class="containe-fluid"></div>
+        
        
         <script>
                 document.getElementById('loadButton').addEventListener('click', (e) => {
@@ -132,6 +145,8 @@
                 window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts);
                       
                 window.gaze.loadGaze(gazeFilePath, screenshotPath, timeInterval, "containerDiv");
+                gazeData = window.gaze.getGaze();
+                startingTime = window.gaze.getStartingTime();
             });
 
             document.getElementById('clearButton').addEventListener('click', (e) => {
@@ -140,6 +155,15 @@
                 document.getElementById('screenshotUpload').files[0].path = null;
                 document.getElementById('timeSpent').innerHTML = "";
                 window.gaze.clearGaze('containerDiv');
+            });
+
+            document.getElementById('nextButton').addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                const timeInterval = parseFloat(document.getElementById('timeInterval').value);
+                console.log(startingTime);
+                startingTime = await window.gaze.nextStep(gazeData, startingTime, timeInterval);
+                console.log(startingTime);
             });
         </script>
     </body>
