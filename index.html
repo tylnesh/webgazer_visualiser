@@ -97,25 +97,41 @@
                         <button id="clearButton" class="btn btn-danger" type="button">Clear</button>
                     </div>
                     <div class="col-4 text-start">
-                        <button id="exportButton" class="btn btn-success" type="button" disabled>Export</button>
+                        <button id="exportHeatmapButton" class="btn btn-success" type="button" >Export Heatmap</button>
+                        <button id="exportScanpathButton" class="btn btn-success" type="button" >Export Scanpath</button>
+                        
                     </div>
                 </div>
 
 
                 <div class="row">
                     <div class=" col-12 mb-3 mt-5 text-center">
-                        <button id="prevButton" class="btn btn-info" type="button">Prev</button>
-                        <button id="nextButton" class="btn btn-info" type="button">Next</button>
+                        <button id="prevButton" class="btn btn-info" type="button" disabled>Prev</button>
+                        <button id="nextButton" class="btn btn-info" type="button" disabled>Next</button>
                     </div>
                 </div>
                
     
                 <div class="row">
-                    <div class="col-12 mb-3 mt-5 text-center text-light">
+                    <div class="col-4 mb-3 mt-5 text-center text-light">
+                        <h3 class="">
+                            Total time: 
+                        </h3>
+                        <span id="timeSpent" class=""></span> 
+                    </div>
+
+                    <div class="col-4 mb-3 mt-5 text-center text-light">
                         <h3 class="">
                             Time spent reading: 
                         </h3>
-                        <span id="timeSpent" class=""></span> 
+                        <span id="timeSpentText" class=""></span> 
+                    </div>
+
+                    <div class="col-4 mb-3 mt-5 text-center text-light">
+                        <h3 class="">
+                            Time spent viewing image: 
+                        </h3>
+                        <span id="timeSpentImage" class=""></span> 
                     </div>
                 </div>
     
@@ -164,6 +180,17 @@
                 console.log(startingTime);
                 startingTime = await window.gaze.nextStep(gazeData, startingTime, timeInterval);
                 console.log(startingTime);
+            });
+
+            document.getElementById('exportHeatmapButton').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.gaze.exportHeatmapCanvasAsImage();
+            });
+
+
+            document.getElementById('exportScanpathButton').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.gaze.exportScanpathCanvasAsImage();
             });
         </script>
     </body>
