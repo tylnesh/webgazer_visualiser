@@ -87,6 +87,13 @@
                         <label class="input-group-text" for="dataPts">Pts per fixation</label>
                         <input type="number" class="form-control" min="0" max="100" step="1" id="dataPts" value="3">
                     </div>
+
+                    <div class="mb-3 col-4">
+                        <label class="input-group-text" for="ratio">Text:Image ratio</label>
+                        <input type="number" class="form-control" min="1" max="5" step="1" id="ratio" value="2">
+                    </div>
+
+
                 </div>
 
                 <div class="row">
@@ -157,8 +164,9 @@
                 const heatmapBlur = parseFloat(document.getElementById('heatmapBlur').value);
                 const maxDatapoints = parseInt(document.getElementById('maxDatapoints').value);
                 const dataPts = parseInt(document.getElementById('dataPts').value);
+                const ratio = parseInt(document.getElementById('ratio').value);
 
-                window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts);
+                window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio);
                       
                 window.gaze.loadGaze(gazeFilePath, screenshotPath, timeInterval, "containerDiv");
                 gazeData = window.gaze.getGaze();

@@ -9,7 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 })
 
-  let heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts;
+  let heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio;
 
 
   let h337 = require('heatmap.js');
@@ -36,22 +36,24 @@ function GenerateHeatmap(containerDivId, gazeData, width, h) {
   heatmap = h337.create(heatmapConfig);
   heatmap.setData({
     max: maxDatapoints,
-    data: [{ x: 0, y: 0, value: 0}]
+    data: [{ x: 1, y: 1, value: 0}]
   });
 
-  gazeData.forEach(function (row)
-    {
-  
-  var dataPoint = {
-    x: row[0], // x coordinate of the datapoint, a number
-    y: row[1], // y coordinate of the datapoint, a number
-    value: dataPts // the value at datapoint(x, y)
-  };
-  
-  heatmap.addData(dataPoint);
-    });
-  
-  }
+  gazeData.every(function (row) {
+    if (row[0] > 0 && row[1] > 0) {
+
+      let dataPoint = {
+        x: row[0], // x coordinate of the datapoint, a number
+        y: row[1], // y coordinate of the datapoint, a number
+        value: dataPts // the value at datapoint(x, y)
+      };
+      
+      heatmap.addData(dataPoint);
+    }
+    return true;
+
+  });
+}
 
 
 
@@ -93,13 +95,17 @@ async function GenerateHeatmapStep(containerDivId, gazeData, startingTime, step,
   gazeData.every(function (row) {
     
       if (startingTime <= row[2]) {
-        var dataPoint = {
-          x: row[0], // x coordinate of the datapoint, a number
-          y: row[1], // y coordinate of the datapoint, a number
-          value: dataPts // the value at datapoint(x, y)
-        };
 
-        heatmap.addData(dataPoint);
+        if (row[0] > 0 && row[1] > 0) {
+
+          let dataPoint = {
+            x: row[0], // x coordinate of the datapoint, a number
+            y: row[1], // y coordinate of the datapoint, a number
+            value: dataPts // the value at datapoint(x, y)
+          };
+          
+          heatmap.addData(dataPoint);
+        }
     }
     if (row[2] >= endingTime) {
       return false;
@@ -120,13 +126,16 @@ async function GenerateScanpath(scanpath_canvas, gazeData) {
   let curY = 0;
 
   gazeData.forEach(function (row) {
-    curX = row[0];
-    curY = row[1];
-    ctx.moveTo(prevX, prevY);
-    ctx.lineTo(curX, curY);
-    ctx.stroke();
-    prevX = curX;
-    prevY = curY;
+
+    if (row[0] > 0 && row[1] > 0) {
+      curX = row[0];
+      curY = row[1];
+      ctx.moveTo(prevX, prevY);
+      ctx.lineTo(curX, curY);
+      ctx.stroke();
+      prevX = curX;
+      prevY = curY;
+    }
   });
 }
 
@@ -144,13 +153,15 @@ async function GenerateScanpathStep(scanpath_canvas, gazeData, startingTime, ste
   let endingTime = startingTime + step;
   gazeData.every(function (row) {
     if (startingTime <= row[2]) {
-      curX = row[0];
-      curY = row[1];
-      ctx.moveTo(prevX, prevY);
-      ctx.lineTo(curX, curY);
-      ctx.stroke();
-      prevX = curX;
-      prevY = curY;
+      if (row[0] > 0 && row[1] > 0) {
+        curX = row[0];
+        curY = row[1];
+        ctx.moveTo(prevX, prevY);
+        ctx.lineTo(curX, curY);
+        ctx.stroke();
+        prevX = curX;
+        prevY = curY;
+      }
     }
     if (row[2] >= endingTime) {
       return false;
@@ -176,10 +187,13 @@ contextBridge.exposeInMainWorld(
     {
       clearGaze: (containerDivId) => {
         document.getElementById(containerDivId).innerHTML = "";
+        heatmapRadius = minOpacity = maxOpacity = heatmapBlur = maxDatapoints = dataPts = null;
+        gazeData = null;
+        gazeData = new Array;
 
       },
 
-      setHeatmapParameters : (hr, mino, maxo, blur, maxDtps, dtps) =>
+      setHeatmapParameters : (hr, mino, maxo, blur, maxDtps, dtps, rt) =>
       {
 
         heatmapRadius = hr;
@@ -187,7 +201,8 @@ contextBridge.exposeInMainWorld(
         maxOpacity = maxo;
         heatmapBlur = blur;
         maxDatapoints = maxDtps;
-        dataPts = dtps
+        dataPts = dtps;
+        ratio = rt;
         
       },
 
@@ -249,8 +264,8 @@ contextBridge.exposeInMainWorld(
 
               if (i>1) {
                 timeDiff = clock - parseInt(lines[i-1].split(",")[2]);
-                if (y > canvasHeight/2) imageTime +=timeDiff;
-                if (y <= canvasHeight/2) textTime += timeDiff;
+                if (y > canvasHeight/ratio && y > 0) imageTime +=timeDiff;
+                if (y <= canvasHeight/ratio && y > 0) textTime += timeDiff;
               }
               gazeData.push([x,y,clock]);
             }
