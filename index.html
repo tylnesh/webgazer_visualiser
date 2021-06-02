@@ -46,14 +46,14 @@
                     </div>
                     <div class="col-4 mb-3">
                         <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="generateHeatmap" checked disabled>
+                        <input class="form-check-input" type="checkbox" id="generateHeatmap" checked>
                         <label class="form-check-label text-light" for="generateHeatmap">Generate Heatmap</label>
                     </div>
                     </div>
                     
                     <div class="col-4 mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="generateScanpath" checked disabled>
+                            <input class="form-check-input" type="checkbox" id="generateScanpath" checked>
                             <label class="form-check-label text-light" for="generateScanpath">Generate Scanpath</label>
                         </div>
                     </div>
@@ -166,7 +166,10 @@
                 const dataPts = parseInt(document.getElementById('dataPts').value);
                 const ratio = parseInt(document.getElementById('ratio').value);
 
-                window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio);
+                const generateHeatmap  =  document.getElementById('generateHeatmap').checked;
+                const generateScanpath =  document.getElementById('generateScanpath').checked;
+
+                window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio, generateHeatmap, generateScanpath );
                       
                 window.gaze.loadGaze(gazeFilePath, screenshotPath, timeInterval, "containerDiv");
                 gazeData = window.gaze.getGaze();

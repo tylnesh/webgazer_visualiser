@@ -11,9 +11,11 @@ window.addEventListener('DOMContentLoaded', () => {
   for (const type of ['chrome', 'node', 'electron']) {
     replaceText(`${type}-version`, process.versions[type])
   }
-})
+});
 
   let heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio;
+  let isGenerateHeatmap = false;
+  let isGenerateScanpath = false;
 
 
   let h337 = require('heatmap.js');
@@ -197,7 +199,7 @@ contextBridge.exposeInMainWorld(
 
       },
 
-      setHeatmapParameters : (hr, mino, maxo, blur, maxDtps, dtps, rt) =>
+      setHeatmapParameters : (hr, mino, maxo, blur, maxDtps, dtps, rt, genH, genS) =>
       {
 
         heatmapRadius = hr;
@@ -207,6 +209,9 @@ contextBridge.exposeInMainWorld(
         maxDatapoints = maxDtps;
         dataPts = dtps;
         ratio = rt;
+        isGenerateHeatmap = genH;
+        isGenerateScanpath = genS;
+
         
       },
 
@@ -303,32 +308,37 @@ contextBridge.exposeInMainWorld(
             let scanpath = createCanvas("scanpath_canvas", canvasWidth, canvasHeight);
 
             if (timeInterval == 0 ) {
-            await GenerateScanpath(scanpath, gazeData);
-            scanpath.style.position = "absolute"
-            scanpath.style.zIndex   = 100;
+            if (isGenerateScanpath) { 
+              await GenerateScanpath(scanpath, gazeData);
+              scanpath.style.position = "absolute"
+              scanpath.style.zIndex   = 100;
+              containerDiv.appendChild(scanpath);
+            }
             
-            await GenerateHeatmap(containerDivId, gazeData, canvasWidth, canvasHeight);
-            containerDiv.appendChild(scanpath);
-            containerDiv.appendChild(canvas);
+            if (isGenerateHeatmap) { 
+              await GenerateHeatmap(containerDivId, gazeData, canvasWidth, canvasHeight);
+              let heatmap = document.getElementsByClassName("heatmap-canvas")[0];
+              heatmap.style.zIndex   = 200;
+            }
 
-            let heatmap = document.getElementsByClassName("heatmap-canvas")[0];
-            heatmap.style.zIndex   = 200;
+            containerDiv.appendChild(canvas);
             ipcRenderer.send('resize-window', canvasWidth, canvasHeight + 500);
 
             } else {
               let step = timeInterval * 1000;
               startingTime = gazeData[1][2];
-              //startingTime = await GenerateScanpathStep(scanpath, gazeData, startingTime, step); 
-              await GenerateScanpathStep(scanpath, gazeData, startingTime, step).then(scanpath.style.position = "absolute");
-              scanpath.style.position = "absolute"
-              scanpath.style.zIndex   = 100;
+              if (isGenerateScanpath) { 
+                await GenerateScanpathStep(scanpath, gazeData, startingTime, step).then(scanpath.style.position = "absolute");
+                scanpath.style.position = "absolute"
+                scanpath.style.zIndex   = 100;
+                containerDiv.appendChild(scanpath);
+              }
+              if (isGenerateHeatmap) {
               GenerateHeatmapStep(containerDivId, gazeData, startingTime, step, canvasWidth, canvasHeight) ;
-              
-              containerDiv.appendChild(scanpath);
-              containerDiv.appendChild(canvas);
-
               let heatmap = document.getElementsByClassName("heatmap-canvas")[0];
               heatmap.style.zIndex   = 200;
+              }
+              containerDiv.appendChild(canvas);
               ipcRenderer.send('resize-window', canvasWidth, canvasHeight + 500);
             }
           });      
