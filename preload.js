@@ -1,3 +1,7 @@
+//todo: pridat pocitadlo word per second
+
+
+
 window.addEventListener('DOMContentLoaded', () => {
   const replaceText = (selector, text) => {
     const element = document.getElementById(selector)
