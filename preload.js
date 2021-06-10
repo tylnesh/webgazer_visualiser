@@ -18,12 +18,10 @@ window.addEventListener('DOMContentLoaded', () => {
   let isGenerateScanpath = false;
 
 
-  let h337 = require('heatmap.js');
 
+let h337 = require('heatmap.js');
 function GenerateHeatmap(containerDivId, gazeData, width, h) {
-
   let heatmapDiv = document.getElementById(containerDivId);
-
   let height = h;
   if (height == 0) {
     height = 1280;
@@ -57,7 +55,6 @@ function GenerateHeatmap(containerDivId, gazeData, width, h) {
       heatmap.addData(dataPoint);
     }
     return true;
-
   });
 }
 
@@ -69,7 +66,6 @@ function createCanvas(id, width, height) {
   c.setAttribute("id", id);
   c.setAttribute("width", width);
   c.setAttribute("height", height);
-  //document.body.appendChild(c);
   return c;
 }
 
@@ -196,12 +192,10 @@ contextBridge.exposeInMainWorld(
         heatmapRadius = minOpacity = maxOpacity = heatmapBlur = maxDatapoints = dataPts = null;
         gazeData = null;
         gazeData = new Array;
-
       },
 
       setHeatmapParameters : (hr, mino, maxo, blur, maxDtps, dtps, rt, genH, genS) =>
       {
-
         heatmapRadius = hr;
         minOpacity = mino;
         maxOpacity = maxo;
@@ -211,8 +205,6 @@ contextBridge.exposeInMainWorld(
         ratio = rt;
         isGenerateHeatmap = genH;
         isGenerateScanpath = genS;
-
-        
       },
 
       getGaze: () => { return gazeData ;},
@@ -225,8 +217,7 @@ contextBridge.exposeInMainWorld(
         let dataURL = canvasArray[0].toDataURL('image/png');
         let url = dataURL.replace(/^data:image\/png/,'data:application/octet-stream');
         downloadLink.setAttribute('href', url);
-        downloadLink.click();
-              
+        downloadLink.click();    
       },
 
       exportScanpathCanvasAsImage: () => {
@@ -240,16 +231,94 @@ contextBridge.exposeInMainWorld(
       },
 
 
+      loadGazeBulk: async (gazePathListID, timeInterval, containerDivId) => {
+        let fs = require('fs')
+        let gazePathList = document.getElementById(gazePathListID).files;
+        let canvasWidth = 1920;
+        let canvasHeight = 1080;
+
+        for (let i = 0; i< gazePathList.length; i++) {
+          console.log("Loading file: " + (i+1) + " of " + gazePathList.length);
+            const data = fs.readFileSync(gazePathList[i].path);
+            let lines = data.toString().split('\n');
+            let gazeWidth  = parseInt(lines[0].split(",")[0]);
+            let gazeHeight = parseInt(lines[0].split(",")[1]);
+            let widthRatio = canvasWidth/ gazeWidth;
+            let heightRatio = canvasHeight/gazeHeight;
+
+            for (let i = 1; i< lines.length; i++) {
+              let x = parseInt(lines[i].split(",")[0]) * widthRatio;
+              let y = parseInt(lines[i].split(",")[1]) * heightRatio;
+              let clock = parseInt(lines[i].split(",")[2]);
+
+              if (i>1) {
+                timeDiff = clock - parseInt(lines[i-1].split(",")[2]);
+                if (y > canvasHeight/ratio && y > 0) imageTime +=timeDiff;
+                if (y <= canvasHeight/ratio && y > 0) textTime += timeDiff;
+              }
+              gazeData.push([x,y,clock]);
+            }
+          console.log("Finished loading file: " + (i+1) + " of " + gazePathList.length);
+
+        }
+        let containerDiv = document.getElementById(containerDivId);
+            let canvas = document.createElement('canvas');
+            canvas.id     = "GazeLayer";
+            canvas.width  = canvasWidth;
+            canvas.height = canvasHeight;
+            canvas.style.zIndex   = 5;
+            canvas.style.position = "absolute";
+            canvas.style.border   = "1px solid";
+            let scanpath = createCanvas("scanpath_canvas", canvasWidth, canvasHeight);
+        
+        if (timeInterval == 0 ) {
+          if (isGenerateScanpath) { 
+            await GenerateScanpath(scanpath, gazeData);
+            scanpath.style.position = "absolute"
+            scanpath.style.zIndex   = 100;
+            containerDiv.appendChild(scanpath);
+          }
+          
+          if (isGenerateHeatmap) { 
+            await GenerateHeatmap(containerDivId, gazeData, canvasWidth, canvasHeight);
+            let heatmap = document.getElementsByClassName("heatmap-canvas")[0];
+            heatmap.style.zIndex   = 200;
+          }
+
+          containerDiv.appendChild(canvas);
+          ipcRenderer.send('resize-window', canvasWidth, canvasHeight + 500);
+
+          } else {
+            let step = timeInterval * 1000;
+            startingTime = gazeData[1][2];
+            if (isGenerateScanpath) { 
+              await GenerateScanpathStep(scanpath, gazeData, startingTime, step).then(scanpath.style.position = "absolute");
+              scanpath.style.position = "absolute"
+              scanpath.style.zIndex   = 100;
+              containerDiv.appendChild(scanpath);
+            }
+            if (isGenerateHeatmap) {
+            GenerateHeatmapStep(containerDivId, gazeData, startingTime, step, canvasWidth, canvasHeight) ;
+            let heatmap = document.getElementsByClassName("heatmap-canvas")[0];
+            heatmap.style.zIndex   = 200;
+            }
+            containerDiv.appendChild(canvas);
+            ipcRenderer.send('resize-window', canvasWidth, canvasHeight + 500);
+          }
+
+
+
+      },
+
 
       loadGaze: async (gazePath, screenPath, timeInterval, containerDivId) => {
 
         let fs = require('fs');        
-    
+
         fs.readFile(gazePath, async function (err, data) {
             if (err) {
                 return console.error(err);
             }
-            //console.log("Asynchronous read: " + data.toString());
             let lines = data.toString().split('\n');
 
             let startTime = parseInt(lines[1].split(",")[2]);
@@ -350,9 +419,6 @@ contextBridge.exposeInMainWorld(
           startingTime = await GenerateScanpathStep(scanpath, gazeData, startingTime, step);
           scanpath.style.position = "absolute"
           scanpath.style.zIndex   = 100;
-              //containerDiv.appendChild(scanpath);
-              //containerDiv.appendChild(canvas);
-
 
           let containerDiv = document.getElementById(containerDivId);
           let canvas = document.createElement('canvas');
@@ -363,15 +429,12 @@ contextBridge.exposeInMainWorld(
           canvas.style.position = "absolute";
           canvas.style.border = "1px solid";
 
-
-          var context = canvas.getContext('2d');
-          var image = new Image();
+          let context = canvas.getContext('2d');
+          let image = new Image();
           image.onload = await function () {
             context.drawImage(image, 0, 0);
           };
           image.src = screenPath;
-
-          //let scanpath = createCanvas("scanpath_canvas", canvasWidth, canvasHeight);
 
           if (timeInterval == 0) {
             await GenerateScanpath(scanpath, gazeData);
@@ -385,12 +448,10 @@ contextBridge.exposeInMainWorld(
             let heatmap = document.getElementsByClassName("heatmap-canvas")[0];
             heatmap.style.zIndex = 200;
             ipcRenderer.send('resize-window', canvasWidth, canvasHeight + 500);
-            //ipcRenderer.send('toggle-resizable', false);
 
           } else {
             let step = timeInterval * 1000;
             startingTime = gazeData[1][2];
-            //startingTime = await GenerateScanpathStep(scanpath, gazeData, startingTime, step);
             GenerateScanpathStep(scanpath, gazeData, startingTime, step);
             GenerateHeatmapStep(containerDiv, gazeData, startingTime, step, canvasWidth, canvasHeight);
             scanpath.style.position = "absolute"

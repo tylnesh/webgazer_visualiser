@@ -19,49 +19,56 @@
         
         <div class="container">
 
-                <div class="row">
-                    <div class="input-group mb-3 col-6">
-                        <label class="input-group-text" for="csvUpload">Gaze Data</label>
-                        <input type="file" class="form-control" accept=".csv" id="csvUpload">
-                    </div>
-                </div>
+         
+            <div class="row">
+                <div class="input-group mb-3 col-6">
+                    <label class="input-group-text" for="csvUpload">Gaze Data</label>
+                    <input type="file" class="form-control me-2" accept=".csv" id="csvUpload">
                 
-                <div class="row">
-                    <div class="input-group mb-3 col-6">
-                        <label class="input-group-text" for="screenshotUpload">Screenshot</label>
-                        <input type="file" class="form-control" accept="image/*" id="screenshotUpload">
-                    </div>
-                </div>
+                    <label class="input-group-text ms-2" for="screenshotUpload">Screenshot</label>
+                    <input type="file" class="form-control" accept="image/*" id="screenshotUpload">
+                    <button id="loadButton" class="btn btn-primary" type="button">Load</button>
+                    <button id="clearButton" class="btn btn-danger" type="button">Clear</button>
 
-                <div class="row">
-                    <div class="mb-3 col-4">
-                        <div class="input-group">
-                  
-                            <label class="input-group-text" for="timeInterval">Time interval</label>
-                                        
-                            <input type="number" class="form-control" min="0" max="10" step="0.5" id="timeInterval" value="0">
-                                        
-                        </div>
-                                              
-                    </div>
-                    <div class="col-4 mb-3">
-                        <div class="form-check form-switch">
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="input-group mt-5 mb-5 col-6">
+                    <label class="input-group-text" for="csvUpload">Gaze Data Bulk</label>
+                    <input type="file" class="form-control" accept=".csv" id="csvUploadBulk" multiple>
+                    <button id="loadBulkButton" class="btn btn-primary" type="button">Load Bulk</button>
+                    <button id="clearButton" class="btn btn-danger" type="button">Clear</button>
+
+                </div>        
+            </div> 
+
+
+            
+            <div class="row">
+                <div class="mb-3 col-4">
+                    <div class="input-group">
+                        <label class="input-group-text" for="timeInterval">Time interval</label>    
+                        <input type="number" class="form-control" min="0" max="10" step="0.5" id="timeInterval" value="0">
+                    </div>                       
+                </div>
+                <div class="col-4 mb-3">
+                    <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="generateHeatmap" checked>
                         <label class="form-check-label text-light" for="generateHeatmap">Generate Heatmap</label>
                     </div>
-                    </div>
-                    
-                    <div class="col-4 mb-3">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="generateScanpath" checked>
-                            <label class="form-check-label text-light" for="generateScanpath">Generate Scanpath</label>
-                        </div>
-                    </div>
-                    
                 </div>
+                <div class="col-4 mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="generateScanpath" checked>
+                        <label class="form-check-label text-light" for="generateScanpath">Generate Scanpath</label>
+                    </div>
+                </div>
+            </div>
 
-                <div class="row">
-                    <h3 class="text-center mb-3 mt-3 text-light text-center"> Heatmap settings</h3>
+            <div class="row">
+                <h3 class="text-center mb-3 mt-3 text-light text-center"> Heatmap settings</h3>
                     <div class="mb-3 col-4">
                         <label class="input-group-text" for="heatmapRadius">Radius</label>
                         <input type="number" class="form-control" min="0" max="100" step="0.5" id="heatmapRadius" value="30">
@@ -93,54 +100,46 @@
                         <input type="number" class="form-control" min="1" max="5" step="1" id="ratio" value="2">
                     </div>
 
+                    <div class="mb-3 col-6">
+                        <button id="exportHeatmapButton" class="btn btn-success col-4" type="button" >Export Heatmap</button>
+                        <button id="exportScanpathButton" class="btn btn-success col-4" type="button" >Export Scanpath</button>
+                    </div>
+            </div>
 
+            
+
+
+
+            <div class="row visually-hidden">
+                <div class=" col-12 mb-3 mt-5 text-center">
+                    <button id="prevButton" class="btn btn-info" type="button" disabled>Prev</button>
+                    <button id="nextButton" class="btn btn-info" type="button" disabled>Next</button>
                 </div>
-
-                <div class="row">
-                    <div class="col-4 text-end">
-                        <button id="loadButton" class="btn btn-primary" type="button">Load</button>
-                    </div>
-                    <div class="col-4 text-center">
-                        <button id="clearButton" class="btn btn-danger" type="button">Clear</button>
-                    </div>
-                    <div class="col-4 text-start">
-                        <button id="exportHeatmapButton" class="btn btn-success" type="button" >Export Heatmap</button>
-                        <button id="exportScanpathButton" class="btn btn-success" type="button" >Export Scanpath</button>
-                        
-                    </div>
-                </div>
-
-
-                <div class="row">
-                    <div class=" col-12 mb-3 mt-5 text-center">
-                        <button id="prevButton" class="btn btn-info" type="button" disabled>Prev</button>
-                        <button id="nextButton" class="btn btn-info" type="button" disabled>Next</button>
-                    </div>
-                </div>
+            </div>
                
     
-                <div class="row">
-                    <div class="col-4 mb-3 mt-5 text-center text-light">
-                        <h3 class="">
-                            Total time: 
-                        </h3>
-                        <span id="timeSpent" class=""></span> 
-                    </div>
-
-                    <div class="col-4 mb-3 mt-5 text-center text-light">
-                        <h3 class="">
-                            Time spent reading: 
-                        </h3>
-                        <span id="timeSpentText" class=""></span> 
-                    </div>
-
-                    <div class="col-4 mb-3 mt-5 text-center text-light">
-                        <h3 class="">
-                            Time spent viewing image: 
-                        </h3>
-                        <span id="timeSpentImage" class=""></span> 
-                    </div>
+            <div class="row">
+                <div class="col-4 mb-3 mt-5 text-center text-light">
+                    <h3 class="">
+                        Total time: 
+                    </h3>
+                    <span id="timeSpent" class=""></span> 
                 </div>
+
+                <div class="col-4 mb-3 mt-5 text-center text-light">
+                    <h3 class="">
+                        Time spent reading: 
+                    </h3>
+                    <span id="timeSpentText" class=""></span> 
+                </div>
+
+                <div class="col-4 mb-3 mt-5 text-center text-light">
+                    <h3 class="">
+                        Time spent viewing image: 
+                    </h3>
+                    <span id="timeSpentImage" class=""></span> 
+                </div>
+            </div>
     
         </div>
 
@@ -151,6 +150,25 @@
         
        
         <script>
+                document.getElementById('loadBulkButton').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    //const gazeFileList = document.getElementById('csvUploadBulk').files;
+                    const timeInterval = parseFloat(document.getElementById('timeInterval').value);
+                    const heatmapRadius = document.getElementById('heatmapRadius').value;
+                    const minOpacity = parseFloat(document.getElementById('minOpacity').value);
+                    const maxOpacity = parseFloat(document.getElementById('maxOpacity').value);
+                    const heatmapBlur = parseFloat(document.getElementById('heatmapBlur').value);
+                    const maxDatapoints = parseInt(document.getElementById('maxDatapoints').value);
+                    const dataPts = parseInt(document.getElementById('dataPts').value);
+                    const ratio = parseInt(document.getElementById('ratio').value);
+
+                    const generateHeatmap  =  document.getElementById('generateHeatmap').checked;
+                    const generateScanpath =  document.getElementById('generateScanpath').checked;
+                    window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio, generateHeatmap, generateScanpath);
+                    window.gaze.loadGazeBulk("csvUploadBulk", timeInterval, "containerDiv");
+                });
+
+
                 document.getElementById('loadButton').addEventListener('click', (e) => {
                 e.preventDefault();
                 const gazeFilePath = document.getElementById('csvUpload').files[0].path;
