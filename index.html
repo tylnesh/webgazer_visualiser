@@ -106,6 +106,40 @@
                     </div>
             </div>
 
+            <div class="row">
+                <h3 class="text-center mb-3 mt-3 text-light text-center">Fixation/Regression settings</h3>
+                    <div class="mb-3 col-4">
+                        <label class="input-group-text" for="fixationWidth">F/R Width</label>
+                        <input type="number" class="form-control" min="0" max="300" step="0.5" id="fixationWidth" value="100">
+                    </div>
+                    <div class="mb-3 col-4">
+                        <label class="input-group-text" for="fixationHeight">F/R Height</label>
+                        <input type="number" class="form-control" min="0" max="200" step="0.5" id="fixationHeight" value="50">
+                    </div>
+
+                    <div class="mb-3 col-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="fixationEstimationMethod" id="fixationEstimationMethod0" checked>
+                            <label class="form-check-label text-light" for="fixationEstimationMethod1">
+                              Rough estimate
+                            </label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="radio" name="fixationEstimationMethod" id="fixationEstimationMethod1" disabled>
+                            <label class="form-check-label text-light" for="fixationEstimationMethod2">
+                              Rough estimate with gaussian mean
+                            </label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="radio" name="fixationEstimationMethod" id="fixationEstimationMethod2" disabled>
+                            <label class="form-check-label text-light" for="fixationEstimationMethod3">
+                              Rough estimate and refinement
+                            </label>
+                          </div>
+                    </div>
+                    
+            </div>
+
             
 
 
@@ -140,6 +174,60 @@
                     <span id="timeSpentImage" class=""></span> 
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-4 mb-3 mt-5 text-center text-light">
+                    <h3 class="">
+                        Mean fixation time (total): 
+                    </h3>
+                    <span id="fixationMeanTotal" class=""></span> 
+                </div>
+
+                <div class="col-4 mb-3 mt-5 text-center text-light">
+                    <h3 class="">
+                        Mean fixation time (on text): 
+                    </h3>
+                    <span id="fixationMeanText" class=""></span> 
+                </div>
+
+                <div class="col-4 mb-3 mt-5 text-center text-light">
+                    <h3 class="">
+                        Mean fixation time (on image): 
+                    </h3>
+                    <span id="fixationMeanImage" class=""></span> 
+                </div>
+
+                <div class="col-4 mb-3 mt-5 text-center text-light">
+                    <h3 class="">
+                        Fixation count (total):  
+                    </h3>
+                    <span id="fixationCountTotal" class=""></span> 
+                </div>
+
+                <div class="col-4 mb-3 mt-5 text-center text-light">
+                    <h3 class="">
+                        Fixation count (on text):  
+                    </h3>
+                    <span id="fixationCountText" class=""></span> 
+                </div>
+                <div class="col-4 mb-3 mt-5 text-center text-light">
+                    <h3 class="">
+                        Fixation count (on image):  
+                    </h3>
+                    <span id="fixationCountImage" class=""></span> 
+                </div>
+
+                <div class="col-4 mb-3 mt-5 text-center text-light">
+                    <h3 class="">
+                        Regression count (on text):  
+                    </h3>
+                    <span id="regressionCount" class=""></span> 
+                </div>
+            </div>
+
+            
+
+            
     
         </div>
 
@@ -162,9 +250,12 @@
                     const dataPts = parseInt(document.getElementById('dataPts').value);
                     const ratio = parseInt(document.getElementById('ratio').value);
 
+                    const fixationWidth = parseFloat(document.getElementById('fixationWidth').value);
+                    const fixationHeight = parseFloat(document.getElementById('fixationHeight').value);
+
                     const generateHeatmap  =  document.getElementById('generateHeatmap').checked;
                     const generateScanpath =  document.getElementById('generateScanpath').checked;
-                    window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio, generateHeatmap, generateScanpath);
+                    window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio, generateHeatmap, generateScanpath, fixationWidth, fixationHeight );
                     window.gaze.loadGazeBulk("csvUploadBulk", timeInterval, "containerDiv");
                 });
 
@@ -184,10 +275,13 @@
                 const dataPts = parseInt(document.getElementById('dataPts').value);
                 const ratio = parseInt(document.getElementById('ratio').value);
 
+                const fixationWidth = parseFloat(document.getElementById('fixationWidth').value);
+                const fixationHeight = parseFloat(document.getElementById('fixationHeight').value);
+
                 const generateHeatmap  =  document.getElementById('generateHeatmap').checked;
                 const generateScanpath =  document.getElementById('generateScanpath').checked;
 
-                window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio, generateHeatmap, generateScanpath );
+                window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio, generateHeatmap, generateScanpath, fixationWidth, fixationHeight );
                       
                 window.gaze.loadGaze(gazeFilePath, screenshotPath, timeInterval, "containerDiv");
                 gazeData = window.gaze.getGaze();

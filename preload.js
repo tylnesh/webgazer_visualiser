@@ -16,6 +16,19 @@ window.addEventListener('DOMContentLoaded', () => {
   let heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio;
   let isGenerateHeatmap = false;
   let isGenerateScanpath = false;
+  let fixationWidth = 0;
+  let fixationHeight = 0;
+
+  let fixationSumTimeTotal = 0;
+  let fixationSumTimeText = 0;
+  let fixationSumTimeImage = 0;
+
+  let fixationCountTotal = 0;
+  let fixationCountText = 0;
+  let fixationCountImage = 0;
+
+
+  let regressionCount = 0;
 
 
 
@@ -190,11 +203,24 @@ contextBridge.exposeInMainWorld(
       clearGaze: (containerDivId) => {
         document.getElementById(containerDivId).innerHTML = "";
         heatmapRadius = minOpacity = maxOpacity = heatmapBlur = maxDatapoints = dataPts = null;
+         fixationWidth = 0;
+         fixationHeight = 0;
+      
+         fixationSumTimeTotal = 0;
+         fixationSumTimeText = 0;
+         fixationSumTimeImage = 0;
+
+
+         fixationCountTotal = 0;
+         fixationCountText = 0;
+         fixationCountImage = 0;
+         regressionCount = 0;
+
         gazeData = null;
         gazeData = new Array;
       },
 
-      setHeatmapParameters : (hr, mino, maxo, blur, maxDtps, dtps, rt, genH, genS) =>
+      setHeatmapParameters : (hr, mino, maxo, blur, maxDtps, dtps, rt, genH, genS, fW, fH) =>
       {
         heatmapRadius = hr;
         minOpacity = mino;
@@ -205,6 +231,8 @@ contextBridge.exposeInMainWorld(
         ratio = rt;
         isGenerateHeatmap = genH;
         isGenerateScanpath = genS;
+        fixationWidth = fW;
+        fixationHeight = fH;
       },
 
       getGaze: () => { return gazeData ;},
@@ -335,6 +363,9 @@ contextBridge.exposeInMainWorld(
             let canvasWidth = parseInt(lines[0].split(",")[0]);
             let canvasHeight = parseInt(lines[0].split(",")[1]);
 
+            let isFixationCounted = false;
+
+
             for (let i = 1; i< lines.length; i++) {
               let x = parseInt(lines[i].split(",")[0]);
               let y = parseInt(lines[i].split(",")[1]);
@@ -344,14 +375,71 @@ contextBridge.exposeInMainWorld(
                 timeDiff = clock - parseInt(lines[i-1].split(",")[2]);
                 if (y > canvasHeight/ratio && y > 0) imageTime +=timeDiff;
                 if (y <= canvasHeight/ratio && y > 0) textTime += timeDiff;
+
+                if (i>2) {
+                  let prevX = parseInt(lines[i-1].split(",")[0]);
+                  let prevY = parseInt(lines[i-1].split(",")[1]);
+
+                  if ((Math.abs(x - prevX) < fixationWidth) && (Math.abs(y - prevY) < fixationHeight) && y > 0 ) {
+                    if (!isFixationCounted) { 
+                      
+                      if (y > canvasHeight/ratio) {
+                        fixationCountImage++;
+                      }
+                      if (y <= canvasHeight/ratio) {
+                        fixationCountText++;
+                      }
+                      isFixationCounted = true;
+                      fixationCountTotal++;
+                      
+                    }
+
+                    if (y > canvasHeight/ratio) {
+                      fixationSumTimeImage += timeDiff;
+                    }
+                    if (y <= canvasHeight/ratio) {
+                      fixationSumTimeText += timeDiff;
+                    }
+                    fixationSumTimeTotal += timeDiff;
+                  } else {
+                    isFixationCounted = false;
+                  }
+
+                  if (((x + fixationWidth + 1) < prevX ) && (Math.abs(y - prevY) < fixationHeight)) {
+                    if (y <= canvasHeight/ratio && y > 0) {
+                      regressionCount++;                    
+                    }
+                  }
+                }
               }
               gazeData.push([x,y,clock]);
             }
 
+            let fixationMeanTotal = fixationSumTimeTotal/fixationCountTotal;
+            let fixationMeanTotalLabel = document.getElementById("fixationMeanTotal");
+            fixationMeanTotalLabel.innerHTML = fixationMeanTotal + " ms";
+
+            let fixationMeanText = fixationSumTimeText/fixationCountText;
+            let fixationMeanTextLabel = document.getElementById("fixationMeanText");
+            fixationMeanTextLabel.innerHTML = fixationMeanText + " ms";
+
+            let fixationMeanImage = fixationSumTimeImage/fixationCountImage;
+            let fixationMeanImageLabel = document.getElementById("fixationMeanImage");
+            fixationMeanImageLabel.innerHTML = fixationMeanImage + " ms";
+
+            let fixationCountTotalLabel = document.getElementById("fixationCountTotal");
+            fixationCountTotalLabel.innerHTML = fixationCountTotal;
+            let fixationCountTextLabel = document.getElementById("fixationCountText");
+            fixationCountTextLabel.innerHTML = fixationCountText;
+            let fixationCountImageLabel = document.getElementById("fixationCountImage");
+            fixationCountImageLabel.innerHTML = fixationCountImage;
+
+            let regressionCountText = document.getElementById("regressionCount");
+            regressionCountText.innerHTML = regressionCount;
+
             let textSeconds = textTime / 1000;
             let timeSpentText = document.getElementById("timeSpentText");
             timeSpentText.innerHTML =  textSeconds+ " s";
-
 
             let imageSeconds = imageTime / 1000;
             let timeSpentImage = document.getElementById("timeSpentImage");
