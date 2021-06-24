@@ -29,6 +29,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
   let regressionCount = 0;
+  let passesCount = 0
 
 
 
@@ -215,6 +216,7 @@ contextBridge.exposeInMainWorld(
          fixationCountText = 0;
          fixationCountImage = 0;
          regressionCount = 0;
+         passesCount = 0;
 
         gazeData = null;
         gazeData = new Array;
@@ -364,6 +366,7 @@ contextBridge.exposeInMainWorld(
             let canvasHeight = parseInt(lines[0].split(",")[1]);
 
             let isFixationCounted = false;
+            let isPreviousFixationImage = false;
 
 
             for (let i = 1; i< lines.length; i++) {
@@ -385,9 +388,18 @@ contextBridge.exposeInMainWorld(
                       
                       if (y > canvasHeight/ratio) {
                         fixationCountImage++;
+                        if (!isPreviousFixationImage) {
+                          passesCount++;
+                          isPreviousFixationImage = true;
+                        }
+                        
                       }
                       if (y <= canvasHeight/ratio) {
                         fixationCountText++;
+                        if (isPreviousFixationImage) {
+                          passesCount++;
+                          isPreviousFixationImage = false;
+                        }
                       }
                       isFixationCounted = true;
                       fixationCountTotal++;
@@ -436,6 +448,8 @@ contextBridge.exposeInMainWorld(
 
             let regressionCountText = document.getElementById("regressionCount");
             regressionCountText.innerHTML = regressionCount;
+            let passesCountText = document.getElementById("passesCount");
+            passesCountText.innerHTML = passesCount;
 
             let textSeconds = textTime / 1000;
             let timeSpentText = document.getElementById("timeSpentText");
