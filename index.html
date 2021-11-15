@@ -96,9 +96,25 @@
                     </div>
 
                     <div class="mb-3 col-4">
-                        <label class="input-group-text" for="ratio">Text:Image ratio</label>
-                        <input type="number" class="form-control" min="1" max="5" step="1" id="ratio" value="2">
+                        <label class="input-group-text" for="ratio">Image X coordinate</label>
+                        <input type="number" class="form-control" min="1" max="5" step="1" id="imgXcoor" value="2">
                     </div>
+
+                    <div class="mb-3 col-4">
+                        <label class="input-group-text" for="ratio">Image Y coordinate</label>
+                        <input type="number" class="form-control" min="1" max="5" step="1" id="imgYcoor" value="2">
+                    </div>
+                    <div class="mb-3 col-4">
+                        <label class="input-group-text" for="ratio">Image X size</label>
+                        <input type="number" class="form-control" min="1" max="5" step="1" id="imgXsize" value="2">
+                    </div>
+
+                    <div class="mb-3 col-4">
+                        <label class="input-group-text" for="ratio">Image Y size</label>
+                        <input type="number" class="form-control" min="1" max="5" step="1" id="imgYsize" value="2">                                                                                                   " value="2">
+                    </div>
+
+
 
                     <div class="mb-3 col-6">
                         <button id="exportHeatmapButton" class="btn btn-success col-4" type="button" >Export Heatmap</button>
@@ -254,14 +270,17 @@
                     const heatmapBlur = parseFloat(document.getElementById('heatmapBlur').value);
                     const maxDatapoints = parseInt(document.getElementById('maxDatapoints').value);
                     const dataPts = parseInt(document.getElementById('dataPts').value);
-                    const ratio = parseInt(document.getElementById('ratio').value);
+                    const imgXcoor = parseInt(document.getElementById('imgXcoor').value);
+                    const imgYcoor = parseInt(document.getElementById('imgYcoor').value);
+                    const imgXsize = parseInt(document.getElementById('imgXsize').value);
+                    const imgYsize = parseInt(document.getElementById('imgYsize').value);
 
                     const fixationWidth = parseFloat(document.getElementById('fixationWidth').value);
                     const fixationHeight = parseFloat(document.getElementById('fixationHeight').value);
 
                     const generateHeatmap  =  document.getElementById('generateHeatmap').checked;
                     const generateScanpath =  document.getElementById('generateScanpath').checked;
-                    window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio, generateHeatmap, generateScanpath, fixationWidth, fixationHeight );
+                    window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, imgXcoor, imgYcoor, imgXsize, imgYsize, generateHeatmap, generateScanpath, fixationWidth, fixationHeight );
                     window.gaze.loadGazeBulk("csvUploadBulk", timeInterval, "containerDiv");
                 });
 
@@ -279,7 +298,10 @@
                 const heatmapBlur = parseFloat(document.getElementById('heatmapBlur').value);
                 const maxDatapoints = parseInt(document.getElementById('maxDatapoints').value);
                 const dataPts = parseInt(document.getElementById('dataPts').value);
-                const ratio = parseInt(document.getElementById('ratio').value);
+                const imgXcoor = parseInt(document.getElementById('imgXcoor').value);
+                const imgYcoor = parseInt(document.getElementById('imgYcoor').value);
+                const imgXsize = parseInt(document.getElementById('imgXsize').value);
+                const imgYsize = parseInt(document.getElementById('imgYsize').value);
 
                 const fixationWidth = parseFloat(document.getElementById('fixationWidth').value);
                 const fixationHeight = parseFloat(document.getElementById('fixationHeight').value);
@@ -287,7 +309,7 @@
                 const generateHeatmap  =  document.getElementById('generateHeatmap').checked;
                 const generateScanpath =  document.getElementById('generateScanpath').checked;
 
-                window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, ratio, generateHeatmap, generateScanpath, fixationWidth, fixationHeight );
+                window.gaze.setHeatmapParameters(heatmapRadius, minOpacity, maxOpacity, heatmapBlur, maxDatapoints, dataPts, imgXcoor, imgYcoor, imgXsize, imgYsize, generateHeatmap, generateScanpath, fixationWidth, fixationHeight );
                       
                 window.gaze.loadGaze(gazeFilePath, screenshotPath, timeInterval, "containerDiv");
                 gazeData = window.gaze.getGaze();

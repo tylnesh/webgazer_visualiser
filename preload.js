@@ -222,7 +222,7 @@ contextBridge.exposeInMainWorld(
         gazeData = new Array;
       },
 
-      setHeatmapParameters : (hr, mino, maxo, blur, maxDtps, dtps, rt, genH, genS, fW, fH) =>
+      setHeatmapParameters : (hr, mino, maxo, blur, maxDtps, dtps, Xc, Yc, Xsize, Ysize, genH, genS, fW, fH) =>
       {
         heatmapRadius = hr;
         minOpacity = mino;
@@ -230,7 +230,10 @@ contextBridge.exposeInMainWorld(
         heatmapBlur = blur;
         maxDatapoints = maxDtps;
         dataPts = dtps;
-        ratio = rt;
+        imgXcoor = Xc;
+        imgYcoor = Yc;
+        imgXsize = Xsize;
+        imgYsize = Ysize;
         isGenerateHeatmap = genH;
         isGenerateScanpath = genS;
         fixationWidth = fW;
@@ -283,8 +286,9 @@ contextBridge.exposeInMainWorld(
 
               if (i>1) {
                 timeDiff = clock - parseInt(lines[i-1].split(",")[2]);
-                if (y > canvasHeight/ratio && y > 0) imageTime +=timeDiff;
-                if (y <= canvasHeight/ratio && y > 0) textTime += timeDiff;
+                if (y > imgYcoor && y < imgYcoor + imgYsize && y > 0) imageTime +=timeDiff;
+
+                //if (y <= canvasHeight/ratio && y > 0) textTime += timeDiff;
               }
               gazeData.push([x,y,clock]);
             }
@@ -376,8 +380,16 @@ contextBridge.exposeInMainWorld(
 
               if (i>1) {
                 timeDiff = clock - parseInt(lines[i-1].split(",")[2]);
-                if (y > canvasHeight/ratio && y > 0) imageTime +=timeDiff;
-                if (y <= canvasHeight/ratio && y > 0) textTime += timeDiff;
+
+                if (y > imgYcoor && y < imgYcoor + imgYsize && y > 0) {
+                  imageTime +=timeDiff;
+                } 
+                if ((y < imgYcoor || y > imgYcoor + imgYsize) && y > 0) {
+                  textTime += timeDiff;
+                }
+
+                //if (y > canvasHeight/ratio && y > 0) imageTime +=timeDiff;
+                //if (y <= canvasHeight/ratio && y > 0) textTime += timeDiff;
 
                 if (i>2) {
                   let prevX = parseInt(lines[i-1].split(",")[0]);
@@ -386,7 +398,7 @@ contextBridge.exposeInMainWorld(
                   if ((Math.abs(x - prevX) < fixationWidth) && (Math.abs(y - prevY) < fixationHeight) && y > 0 ) {
                     if (!isFixationCounted) { 
                       
-                      if (y > canvasHeight/ratio) {
+                      if (y > imgYcoor && y < imgYcoor + imgYsize && y > 0)  {
                         fixationCountImage++;
                         if (!isPreviousFixationImage) {
                           passesCount++;
@@ -394,7 +406,7 @@ contextBridge.exposeInMainWorld(
                         }
                         
                       }
-                      if (y <= canvasHeight/ratio) {
+                      if ((y < imgYcoor || y > imgYcoor + imgYsize) && y > 0) {
                         fixationCountText++;
                         if (isPreviousFixationImage) {
                           passesCount++;
@@ -406,19 +418,31 @@ contextBridge.exposeInMainWorld(
                       
                     }
 
-                    if (y > canvasHeight/ratio) {
+                    // if (y > canvasHeight/ratio) {
+                    //   fixationSumTimeImage += timeDiff;
+                    // }
+                    // if (y <= canvasHeight/ratio) {
+                    //   fixationSumTimeText += timeDiff;
+                    // }
+
+
+                    if (y > imgYcoor && y < imgYcoor + imgYsize && y > 0) {
                       fixationSumTimeImage += timeDiff;
-                    }
-                    if (y <= canvasHeight/ratio) {
+                    } 
+                    if ((y < imgYcoor || y > imgYcoor + imgYsize) && y > 0) {
                       fixationSumTimeText += timeDiff;
                     }
+
+
+
                     fixationSumTimeTotal += timeDiff;
                   } else {
                     isFixationCounted = false;
                   }
 
                   if (((x + fixationWidth + 1) < prevX ) && (Math.abs(y - prevY) < fixationHeight)) {
-                    if (y <= canvasHeight/ratio && y > 0) {
+                    if (((y < imgYcoor || y > imgYcoor + imgYsize) && y > 0)) {
+                    //if (y <= canvasHeight/ratio && y > 0) {
                       regressionCount++;                    
                     }
                   }
